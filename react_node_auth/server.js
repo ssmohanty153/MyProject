@@ -9,7 +9,6 @@ const fs = require('fs');
 
 const app = express();
 const PORT = 3008;
-const SECRET_KEY = 'your-secret-key'; // Change this to a secure secret key in production
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -58,16 +57,13 @@ app.post('/api/register', async (req, res) => {
     }
 
     try {
-        // Hash the password only if it's new or has been modified
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Add the new user to the database
         const newUser = { id: users.length + 1, username, password: hashedPassword };
 
         console.log(newUser, "newUsernewUser")
         users.push(newUser);
 
-        // Generate and attach a token to the user
         const token = jwt.sign({ userId: newUser.id }, 'shhh', {
             expiresIn: '1h',
         });
@@ -139,7 +135,6 @@ app.get('/api/logout', (req, res) => {
 app.get('/api/data', authenticateUser, (req, res) => {
     console.log('Received request for protected data from user:', req.user);
 
-    // Protected route, accessible only with a valid JWT
     res.json({ message: 'Protected data', user: req.user });
 });
 
